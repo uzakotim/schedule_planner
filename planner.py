@@ -1,16 +1,34 @@
 import numpy as np
 import csv
 # Source: https://subscription.packtpub.com/book/data/9781838645359/8/ch08lvl1sec39/implementation
-
 # Setting the parameters gamma and alpha for the Q-Learning
 gamma = 0.75
 alpha = 0.9
 
+def printMatrix(a):
+   # source: https://stackoverflow.com/questions/17870612/printing-a-two-dimensional-array-in-python
+    print("Матрица наград ["+("%d" %a.shape[0])+"]["+("%d" %a.shape[1])+"]")
+    rows = a.shape[0]
+    cols = a.shape[1]
+    for i in range(0,rows):
+        for j in range(0,cols):
+            print(("%6.f" %a[i,j]),end=" ")
+        print()
+    print()
+def printDict(a):
+    for i in a:
+        print(i,": ",a[i],end='\n')
 
 # Making a function that returns the shortest route from a starting to ending location
-def route(starting_state, ending_state,R,state_to_task):
-    R_new = np.copy(R)
+def route(starting_state, ending_state,R_new,state_to_task):
+    global gamma,alpha
+    # -----------------------------------------
+    # Function to find the best route from 
+    # starting to ending location
+    # -----------------------------------------
+    # Optional : set goal reward high
     # R_new[ending_state, ending_state] = 1000
+    # -----------------------------------------
     Q = np.array(np.zeros([R_new.shape[0], R_new.shape[1]]))
     for i in range(1000):
         current_state = np.random.randint(0, R_new.shape[0])
@@ -32,66 +50,91 @@ def route(starting_state, ending_state,R,state_to_task):
         counter += 1
         if counter > len(state_to_task):
             print("Простите, я не смог найти ваш план")
+            print("Добавьте больше связей с событиями")
             break
     return route
+def read_stored_matrix(state_to_task):
+    # -----------------------------------------
+    # Function to read the graph from csv file
+    # -----------------------------------------
+    elements = []
+    with open('matrix.csv', newline='') as csvfile:
+        reader = csv.reader(csvfile, delimiter=',', quotechar='|')
+        for i,row in enumerate(reader):
+            if i == 0:
+                for j,x in enumerate(row):
+                    state_to_task[j] = x
+            else:
+                elements.append([float(k) for k in row])   
+    R = np.array(elements, dtype=int)
+    return R,state_to_task
 
+
+def manual_input_matrix(state_to_task):
+    # -----------------------------------------
+    # Function to write the graph from 
+    # user input
+    # -----------------------------------------
+    # Defining the states
+    n = int(input("Введите число дел...\n"))
+    for i in range(n):
+        task = input("Введите название каждой задачи...\n")
+        state_to_task[i] = task
+    # Defining the rewards
+    R = np.eye(n,dtype=int)
+    printMatrix(R)
+    inp = ''
+    while(1):
+        for i in range(n):
+            print(i,":", state_to_task[i])
+        inp = input("Введите через пробел\nНачальная задача, следующая задача, наргада за переход\nПросто нажмите Enter чтобы завершить\n")
+        if inp == '':
+            break
+        else:
+            inp = inp.split()
+            R[int(inp[0]),int(inp[1])] = int(inp[2])
+        printMatrix(R)
+    tasks = [x[1] for x in state_to_task.items()]
+    # Save the matrix into csv file
+    with open('matrix.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile, delimiter=',',
+                            quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        writer.writerow(tasks)
+        row_list = []
+        for i in range(n):
+            for j in range(n):
+                row_list.append(str(int(R[i,j])))
+            writer.writerow(row_list)
+            row_list = []
+    return R,state_to_task
 def main():
-    selection = int(input("Ручной ввод (0) или использовать данные (1):  "))
+    string_inp1 = "Ручной ввод (0) или использовать данные (1)\n"
+    print("*"*len(string_inp1))
+    print("Обучающийся планировщик ")
+    print("Тимур Узаков")
+    print("*"*len(string_inp1))
+    selection = int(input(string_inp1))
     use_stored_matrix = selection
     state_to_task = {}
     if use_stored_matrix:
-        elements = []
-        with open('matrix.csv', newline='') as csvfile:
-            reader = csv.reader(csvfile, delimiter=',', quotechar='|')
-            for i,row in enumerate(reader):
-                if i == 0:
-                    for j,x in enumerate(row):
-                        state_to_task[j] = x
-                else:
-                    elements.append([float(k) for k in row])   
-        R = np.array(elements)
-
+        R,state_to_task = read_stored_matrix(state_to_task)
     if (use_stored_matrix==False):
-        # Defining the states
-        state_to_task = {}
-        n = input("Введите число дел...\n")
-        n = int(n)
-        for i in range(n):
-            task = input("Введите название каждой задачи...\n")
-            state_to_task[i] = task
-        # Defining the actions
-        actions = [x for x in range(1,n+1)]
-        R = np.eye(n)
-        print(R)
-        inp = ''
-        while(1):
-            for i in range(n):
-                print(i,":", state_to_task[i])
-            inp = input("Введите через пробел\nНачальная задача, следующая задача, наргада за переход\nПросто нажмите Enter чтобы завершить\n")
-            if inp == '':
-                break
-            else:
-                inp = inp.split()
-                R[int(inp[0]),int(inp[1])] = int(inp[2])
-            print(R)
-        tasks = [x[1] for x in state_to_task.items()]
-        with open('matrix.csv', 'w', newline='') as csvfile:
-            writer = csv.writer(csvfile, delimiter=',',
-                                quotechar='|', quoting=csv.QUOTE_MINIMAL)
-            writer.writerow(tasks)
-            row_list = []
-            for i in range(n):
-                for j in range(n):
-                    row_list.append(str(int(R[i,j])))
-                writer.writerow(row_list)
-                row_list = []
-    print(R)
-    print(state_to_task)
-    decision = [int(x) for x in input("Введите число начальной задачи и конечно задачи через пробел\n").split()]
+        R,state_to_task = manual_input_matrix(state_to_task)
+    
+    printMatrix(R)
+    print("*"*len(string_inp1))
+    printDict(state_to_task)
+    print("*"*len(string_inp1))
+    decision = [int(x) for x in input("Введите число первого дела и\nпоследнего дела через пробел\n").split()]
     # Printing the final route
+    sourceFile = open('plan.txt', 'w')
+    print("*"*len(string_inp1))
+    print('Результат:',file = sourceFile)
     print('Результат:')
-    for x in route(decision[0], decision[1],R,state_to_task):
-        print(x,end='\n')
+    for i,x in enumerate(route(decision[0], decision[1],R,state_to_task)):
+        print(i+1,":",x,file= sourceFile,end='\n')
+        print(i+1,":",x,end='\n')
+    sourceFile.close()
 
 if __name__ == "__main__":
     main()
