@@ -27,7 +27,7 @@ def route(starting_state, ending_state,R_new,state_to_task):
     # starting to ending location
     # -----------------------------------------
     # Optional : set goal reward high
-    # R_new[ending_state, ending_state] = 1000
+    R_new[ending_state, ending_state] = 1000
     # -----------------------------------------
     Q = np.array(np.zeros([R_new.shape[0], R_new.shape[1]]))
     for i in range(1000):
@@ -76,10 +76,15 @@ def manual_input_matrix(state_to_task):
     # user input
     # -----------------------------------------
     # Defining the states
-    n = int(input("Введите число дел...\n"))
-    for i in range(n):
-        task = input("Введите название каждой задачи...\n")
-        state_to_task[i] = task
+    i = 0
+    while(1):
+        task = input("Введите название каждой задачи...\nПросто нажмите Enter для завершения\n")
+        if task == '':
+            break
+        else:
+            state_to_task[i] = task
+        i+=1
+    n = len(state_to_task)
     # Defining the rewards
     R = np.eye(n,dtype=int)
     printMatrix(R)
