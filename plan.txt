@@ -1,5 +1,3 @@
-Результат:
-1 : sleep
-2 : exam
-3 : clash
-4 : presentation
+Result:
+1 : create a web-site
+2 : study for state-examination

@@ -7,7 +7,7 @@ alpha = 0.9
 
 def printMatrix(a):
    # source: https://stackoverflow.com/questions/17870612/printing-a-two-dimensional-array-in-python
-    print("Матрица наград ["+("%d" %a.shape[0])+"]["+("%d" %a.shape[1])+"]")
+    print("Reward matrix ["+("%d" %a.shape[0])+"]["+("%d" %a.shape[1])+"]")
     rows = a.shape[0]
     cols = a.shape[1]
     for i in range(0,rows):
@@ -49,8 +49,8 @@ def route(starting_state, ending_state,R_new,state_to_task):
         route.append(next_task)
         counter += 1
         if counter > len(state_to_task):
-            print("Простите, я не смог найти ваш план")
-            print("Добавьте больше связей с событиями")
+            print("Sorry, I could not find a plan")
+            print("Add more connections between events")
             break
     return route
 def read_stored_matrix(state_to_task):
@@ -78,7 +78,7 @@ def manual_input_matrix(state_to_task):
     # Defining the states
     i = 0
     while(1):
-        task = input("Введите название каждой задачи...\nПросто нажмите Enter для завершения\n")
+        task = input("Type-in a name for each of your tasks...\nSimply press Enter to finish\n")
         if task == '':
             break
         else:
@@ -92,7 +92,7 @@ def manual_input_matrix(state_to_task):
     while(1):
         for i in range(n):
             print(i,":", state_to_task[i])
-        inp = input("Введите через пробел\nНачальная задача, следующая задача, наргада за переход\nПросто нажмите Enter чтобы завершить\n")
+        inp = input("Type-in separately by space\nStarting task, next task, reward for transition\nSimply press Enter to finish\n")
         if inp == '':
             break
         else:
@@ -113,10 +113,7 @@ def manual_input_matrix(state_to_task):
             row_list = []
     return R,state_to_task
 def main():
-    string_inp1 = "Ручной ввод (0) или использовать данные (1)\n"
-    print("*"*len(string_inp1))
-    print("Обучающийся планировщик ")
-    print("Тимур Узаков")
+    string_inp1 = "Manual input (0) or use data (1)\n"
     print("*"*len(string_inp1))
     selection = int(input(string_inp1))
     use_stored_matrix = selection
@@ -130,12 +127,12 @@ def main():
     print("*"*len(string_inp1))
     printDict(state_to_task)
     print("*"*len(string_inp1))
-    decision = [int(x) for x in input("Введите число первого дела и\nпоследнего дела через пробел\n").split()]
+    decision = [int(x) for x in input("Type in the index of the first task and\nthe last task separated by space\n").split()]
     # Printing the final route
     sourceFile = open('plan.txt', 'w')
     print("*"*len(string_inp1))
-    print('Результат:',file = sourceFile)
-    print('Результат:')
+    print('Result:',file = sourceFile)
+    print('Result:')
     for i,x in enumerate(route(decision[0], decision[1],R,state_to_task)):
         print(i+1,":",x,file= sourceFile,end='\n')
         print(i+1,":",x,end='\n')

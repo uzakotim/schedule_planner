@@ -1,6 +1,5 @@
-sleep,clash,linkedin,exam,presentation
-1,0,0,20,0
-0,1,0,0,20
-0,0,1,0,0
-20,20,0,1,0
-10,0,20,0,1
+create a web-site,play clash of clans,learn something on linkedin,study for state-examination
+1,0,0,10
+0,1,0,0
+10,0,1,0
+0,10,0,1
