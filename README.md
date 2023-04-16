@@ -1,4 +1,4 @@
-# schedule_planner
+# SCHEDULE_PLANNER
 Graph-based planner of tasks
 ____________________________
 Usage: python3 planner.py
